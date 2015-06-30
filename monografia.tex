@@ -1,0 +1,124 @@
+\documentclass[12pt,a4paper]{ufpr}
+% \usepackage[portuges,brazil]{babel}
+% \usepackage[portuguese,brazil]{babel}
+
+%instalar aspell-pt
+
+\usepackage[brazil]{babel}
+%\usepackage[utf8x]{inputenc} - para corrigir o erro de caractere especial no titulo do cap 1
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb,amsmath}
+\usepackage{epsfig}
+\usepackage{multirow}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{lmodern}
+\usepackage{textcomp} 
+\usepackage[T1]{fontenc}
+\usepackage{amssymb}
+\usepackage{subfigure}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{setspace}
+\usepackage{ps-macros}
+\usepackage{comment}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{datagidx} %usado para siglas
+\usepackage{notoccite}
+
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+\setcounter{secnumdepth}{3}    % n - numero de niveis de subsubsection numeradas
+\setcounter{tocdepth}{3}       % coloca ate o nivel n no sumario
+
+\title{Titulo}
+% \author{Lucas Affonso Xavier de Morais 000 Evelim Carla Ribeiro 000 Alan Peterson Carvalho Silva}
+\advisortitle{Orientador} % ou Orientador
+\advisorname{Bruno M\"uller Junior.}
+\advisorplace{Departamento de Inform\'atica, UFPR}  % departamento, instituicao
+\city{Curitiba}
+\year{2015}
+
+\banca        % nao insira o nome do orientador, ja eh feito automaticamente
+{Prof. ---- }{Departamento de Inform\'tica, UFPR}
+{Prof. ---- }{Departamento de Inform\'tica, UFPR}
+{}{} % Se houverem outros, preencher
+{}{}
+\defesa{?? de julho de 2015} % dia em que foi realizada a defesa da dissertacao
+
+\newgidx{glossary}{Lista de abreviaturas}
+\DTLgidxSetDefaultDB{glossary}
+
+% Dicionariop de siglas
+\newterm[description={Sistema de gerenciamento de banco de dados}]{\textbf{SGBD}}
+
+\begin{document}
+
+\makecapaproposta              % cria capa para proposta%
+%\makecapadissertacao            % cria capa para dissertacao de mestrado %
+%\makerosto                     % cria folha de rosto para versão final da UFPR %
+%\maketermo                     % cria folha com o termo de aprovação da dissertação%
+
+%\singlespacing           % espacamento 1 - capa UFPR%
+%\onehalfspacing          % espacamento 1/2 %
+\doublespacing            % espacamento 2 - UFPR %
+
+\pagestyle{headings}
+\pagenumbering{roman}
+
+\chapter*{Agradecimentos}
+\input{agradecimentos.tex}          % possiu somente o texto
+
+\tableofcontents
+
+\listoffigures         
+\addcontentsline{toc}{chapter}{\MakeUppercase{Lista de Figuras}}
+\newpage
+
+\listoftables        
+\addcontentsline{toc}{chapter}{\MakeUppercase{Lista de Tabelas}}
+\newpage
+
+\printterms[columns=1,style=align]
+%Term definitions
+
+\chapter*{Resumo}
+\addcontentsline{toc}{chapter}{\MakeUppercase{Resumo}}
+\input{resumo.tex}           % somente o texto
+\newpage
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{\MakeUppercase{Abstract}}
+\input{abstract.tex}        % somente o texto
+\newpage
+
+\pagenumbering{arabic}
+
+\input{1_capitulo_introducao.tex}
+\input{2_capitulo_conceitucaoIdeiaGeral.tex}
+\input{3_capitulo_tecnologias.tex}
+\input{4_capitulo_implementacao.tex}
+%\input{5_capitulo_conclusao.tex}
+
+\input{apendices.tex}     % se houver anexo
+
+\bibliographystyle{brazil} %ordena a bibliografia por ordem alfabética de titulo ou autor...
+\bibliography{bibliografia}
+%utilize macros (3 primeiras letras do mes em ingles, minusculas) no seu
+%.bib para atribuir o nome do mes em portugues nas referencia,
+%se o style for brazil, outros estilos tambem aceitam estas macros
+%Ex:
+%
+%@InProceedings{teste,
+%  author =       {Luciano}
+%  year =         {2013}
+%  month =        {}#sep;
+%}
+
+\addcontentsline{toc}{chapter}{\MakeUppercase{Bibliografia}}
+
+%\singlespacing
+%\makecapadissertacao
+
+\end{document}
