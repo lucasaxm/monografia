@@ -1,0 +1,107 @@
+\chapter{Apêndices}
+\label{cha: apendices}
+
+\section{Recursos e tipos de recursos da API do Youtube}
+\label{sec: RecursosYoutube}
+
+\begin{table}[ht]
+\begin{tabular}{|p{3cm}|p{12cm}|}
+\hline
+\rowcolor[HTML]{CFCFCF} 
+Tipo de recurso	&	Descrição	 \\ \hline
+activity	    &	Contém informações sobre uma ação que determinado usuário executou no site do YouTube. Ações do usuário que são informadas em feeds de atividades incluem a classificação de um vídeo, o compartilhamento de um vídeo, a marcação de um vídeo como favorito, a publicação de um boletim do canal etc.	\\ \hline
+channel	        &	Contém informações sobre um canal simples do YouTube.	\\ \hline
+channelBanner	&	Identifica o URL que será usado para definir uma imagem recém-enviada como imagem do banner de um canal.	\\ \hline
+guideCategory	&	Identifica uma categoria que o YouTube associa aos canais com base em seu conteúdo ou outros indicadores, como a popularidade. As categorias de guia servem para organizar canais de modo que os usuários do YouTube possam encontrar com mais facilidade o conteúdo que procuram. Embora os canais possam ser associados a uma ou mais categorias de guia, não é certeza que eles estejam em uma delas.	\\ \hline
+playlist	    &	Representa uma playlist simples do YouTube. Uma playlist é um conjunto de vídeos que podem ser visualizados em sequência e compartilhados com outros usuários.	\\ \hline
+playlistItem	&	Identifica um recurso, como um vídeo, que faz parte de uma playlist. O recurso playlistItem também contém detalhes que explicam como o recurso incluso é usado na playlist.	\\ \hline
+search result	&	Contém informações sobre um vídeo, um canal ou uma playlist do YouTube que corresponde aos parâmetros de pesquisa especificados em uma solicitação da API. Embora indique um recurso exclusivamente identificável (como um vídeo), um resultado de pesquisa não tem seus próprios dados persistentes.	\\ \hline
+subscription	&	Contém informações sobre a inscrição de um usuário do YouTube. Uma assinatura notifica o usuário quando novos vídeos são adicionados a um canal ou quando outro usuário executa uma das várias ações no YouTube, como o upload ou a classificação de um vídeo ou comentários sobre um vídeo.	\\ \hline
+thumbnail	    &	Identifica imagens em miniatura associadas a um recurso.	\\ \hline
+video	        &	Representa um vídeo simples do YouTube.	\\ \hline
+videoCategory	&	Identifica uma categoria que foi ou pode ser associada a vídeos enviados.	\\ \hline
+\end{tabular}
+\caption[Recursos e tipos de recursos]{Recursos e tipos de recursos\cite{GettingStartedYoutubeAPI}.}
+\label{fig: RecursosYoutube}
+\end{table}
+
+\section{Operações compatíveis}
+\label{sec: OperacoesCompativeis}
+
+\begin{table}[ht]
+\begin{tabular}{|p{3cm}|p{12cm}|}
+\hline
+\rowcolor[HTML]{CFCFCF} 
+Operação  &	Descrição	\\ \hline
+list	  &	Recupera (GET) uma lista vazia ou com recursos.	\\ \hline
+insert	  &	Cria (POST) um novo recurso.	\\ \hline
+update	  &	Modifica (PUT) um recurso existente para propagar os dados em sua solicitação.	\\ \hline
+delete	  &	Remove (DELETE) um recurso específico.	\\ \hline
+\end{tabular}
+\caption[Operações compatíveis]{Operações compatíveis\cite{GettingStartedYoutubeAPI}.}
+\label{fig: OperacoesCompativeis}
+\end{table}
+
+\section{Relação de compatibilidade de recursos e operações}
+\label{sec: OperacoesCompativeisComRecursos}
+
+\begin{table}[ht]
+\begin{tabular}{|p{6cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|}
+\hline
+\rowcolor[HTML]{CFCFCF} 
+Tipo de recurso	&\multicolumn{4}{|c|}{Operações suportadas}  \\ \hline
+\ &	list	&	insert	&	update	&	delete	\\ \hline
+activity	    &	sim		&	sim		&	não		&	não		\\ \hline
+channel	        &	sim		&	não		&	não		&	não		\\ \hline
+channelBanner	&	não		&	sim		&	não		&	não		\\ \hline
+guideCategory	&	sim		&	não		&	não		&	não		\\ \hline
+playlist	    &	sim		&	sim		&	sim		&	sim		\\ \hline
+playlistItem	&	sim		&	sim		&	sim		&	sim		\\ \hline
+search result	&	sim		&	não		&	não		&	não		\\ \hline
+subscription	&	sim		&	não		&	não		&	não		\\ \hline
+thumbnail	    &	não		&	não		&	não		&	não		\\ \hline
+video	        &	sim		&	sim		&	sim		&	sim		\\ \hline
+videoCategory	&	sim		&	não		&	não		&	não		\\ \hline
+\end{tabular}
+\caption[Operações compatíveis com recursos]{Operações compatíveis com recursos\cite{GettingStartedYoutubeAPI}.}
+\label{fig: OperacoesCompativeisComRecursos}
+\end{table}
+
+\section{Cadastrando um aplicativo}
+\label{sec: CadastrandoApp}
+
+Para cadastrar um aplicativo siga o seguintes passos:
+
+\begin{enumerate}
+    \item Vá até a página https://console.developers.google.com/project;
+    \item Selecione um projeto;
+    \item Selecione APIs e autorização. Na lista de APIs, certifique-se que o estado é ON para a YouTube Data API v3.
+    \item Selecione Credenciais.
+    \item A API é compatível com dois tipos de credenciais. Crie as credenciais apropriadas para seu projeto:
+    \begin{itemize}
+    	\item OAuth 2.0: seu aplicativo precisa enviar um token do OAuth 2.0 com todas as solicitações que acessam dados privados do usuário. Seu aplicativo envia um ID do cliente e possivelmente uma chave secreta do cliente para conseguir um token. É possível gerar credenciais do OAuth 2.0 para aplicativos na Web, contas de serviço ou aplicativos instalados.
+    	\item Chaves de API: Uma solicitação que não fornece um token do OAuth 2.0 precisa enviar uma chave de API. A chave identifica seu projeto e fornece acesso à API, à cota e aos relatórios.
+    \end{itemize}
+    obs: Se o tipo de chave necessária ainda não existe, crie uma chave de API selecionando Criar nova chave e, então, escolha o tipo apropriado de chave. Em seguida, insira os dados adicionais obrigatórios para esse tipo de chave.
+\end{enumerate} 
+
+Em nossa aplicação utilizamos utilizaremos a credencial OAuth 2.0 através de uma conta de serviço, pois queremos as informações públicas dessa rede social.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|p{2cm}|p{3cm}|}
+\hline
+\rowcolor[HTML]{CFCFCF} 
+Prefixo	&	Tipo de link	\\ \hline
+t1\_	    &	Comment	        \\ \hline
+t2\_	    &	Account	        \\ \hline
+t3\_	    &	Link	        \\ \hline
+t4\_	    &	Message	        \\ \hline
+t5\_	    &	Subreddit	    \\ \hline
+t6\_	    &	Award         	\\ \hline
+t8\_	    &	PromoCampaign	\\ \hline
+\end{tabular}
+\caption[API do Reddit - Tipos de recursos e seus prefixos]{API do Reddit - Tipos de recursos e seus prefixos \cite{RedditAPI}.}
+\label{fig: RecursosReddit}
+\end{table}
+ 

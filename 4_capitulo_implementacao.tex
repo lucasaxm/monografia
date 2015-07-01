@@ -1,356 +1,188 @@
-\chapter{Aplicações web com MEAN \textit{Stack}}	 
-\label{implementacao}
+\chapter{Extração e armazenamento de dados de redes sociais para análise de sentimentos}
+\label{cha: Extracao}
 
 %\section{Aplicação Math Race  desenvolvido com outras tecnologias}
 
-    No capitulo três foi apresentado cada elemento principal do framework. Neste capítulo será apresentado e analisado, a implementação e funcionamento destes elementos.
+    No capitulo três foi apresentado cada elemento principal do framework. Neste capítulo será apresentada e analisada, a implementação e funcionamento destes elementos.
 
 Descrição de cada seção comentada.
 % Na seção \ref{Comparativo em relação a arquitetura de aplicações LAMP} é apresentado um comparativo entre o MEAN \textit{Stack} e a arquitetura LAMP. A integração das ferramentas do MEAN \textit{Stack} é apresentada na seção \ref{Aplicação Math Race com MEAN Stack}. Na seção \ref{subsec: Testes de desempenho}  são  mostrados os testes realizados em relação ao desempenho.
 
 % A figura \ref{fig:MEAN Stack visto como uma pilha} ilustra a pilha que é formada unindo as tecnologias já explicadas no capítulo anterior. No banco de dados coloca-se o MongoDB, no lado do servidor existe o Node.js e o Express e por último no lado do cliente o AngularJS. A seta de duplo sentido representa que a passagem de dados acontece em ambos os sentidos. O principal motivo para estas tecnologias funcionarem bem em conjunto, é que todas elas têm como base a linguagem Javascript, sendo que esta característica faz parte da proposta do MEAN \textit{Stack} que é o desenvolvimento de aplicações web escaláveis com a utilização de um conjunto de ferramentas em Javascript.
-  
-    
-    % \begin{figure}[htb]
-    % \centering
-    % \includegraphics[scale=0.5]{images/mean_vs_lamp.png}
-    % \caption{Tabela de comparação entre MEAN vs LAMP}
-    % \label{fig:tabela mean vs lamp}
-    % \end{figure}
 
-Pensamos em deixar a interface com o usuário a mais simples e intuitiva possível.
-Para realizar uma extração basta preencher os campos e opções da tela inicial, que consiste em:
+\section{Modelo do banco de dados}
+\label{sec: Modelo}
+Para fornecer estabilidade e confiabilidade para o armazenamento das informações, escolhemos implementar um banco de dados relacional, já que estas são algumas de suas principais vantagens, como mencionado na seção \ref{sec: BDRelacional}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.8\textwidth]{images/modeloTAZ.png}
+\caption{Modelo de entidades e relacionamentos do framework TAZ.}
+\label{fig: modeloTAZ}
+\end{figure}
+
+Nas subseções seguintes, explicaremos as principais tabelas do modelo \ref{fig: modeloTAZ}, suas colunas mais importantes e as informações que devem ser armazenadas.
+
+\subsection{Palavra-chave (Keywords)}
+\label{subsec: Keywords}
+Na tabela \textit{keywords} armazenamos as palavras-chave pesquisadas.
+\begin{table}[ht]
+    \begin{tabular}{|p{3cm}|p{12cm}|}
+        \hline
+        \rowcolor[HTML]{CFCFCF} 
+        Coluna      & Descrição  \\ \hline
+        name        & Palavra-chave em si. \\ \hline
+    \end{tabular}
+    \caption{Descrição dos campos da tabela \textit{keywords}.}
+    \label{fig: DescricaoTabelaPalavrasChave}
+\end{table}
+
+Uma palavra-chave pode ser utilizada em várias pesquisas.
+
+\subsection{Termos auxiliares (Tags)}
+\label{subsec: Tags}
+Na tabela \textit{keywords} armazenamos os termos auxiliares usados nas pesquisas realizadas.
+\begin{table}[ht]
+    \begin{tabular}{|p{3cm}|p{12cm}|}
+        \hline
+        \rowcolor[HTML]{CFCFCF} 
+        Coluna      & Descrição  \\ \hline
+        name        & Termo auxiliar. \\ \hline
+    \end{tabular}
+    \caption{Descrição dos campos da tabela \textit{tags}.}
+    \label{fig: DescricaoTabelaTermosAuxiliares}
+\end{table}
+
+Um termo auxiliar pode ser usado em várias pesquisas.
+
+\subsection{Pesquisas (Queries)}
+\label{subsec: Queries}
+Na tabela \textit{queries} são salvos dados de pesquisas. 
+\begin{table}[ht]
+    \begin{tabular}{|p{3cm}|p{12cm}|}
+        \hline
+        \rowcolor[HTML]{CFCFCF} 
+        Coluna      & Descrição  \\ \hline
+        keyword\_id & Identificador da keyword utilizada. \\ \hline
+    \end{tabular}
+    \caption{Descrição dos campos da tabela \textit{queries}.}
+    \label{fig: DescricaoTabelaPesquisas}
+\end{table}
+
+Uma pesquisa deve referenciar uma palavra-chave e entre 0 e 3 termos auxiliares.
+Também deve estar relacionada a nenhuma ou várias publicações.
+
+\subsection{Fontes (Sources)}
+\label{subsec: Sources}
+A tabela \textit{sources} contém os nomes das fontes configuradas.
+\begin{table}[ht]
+    \begin{tabular}{|p{3cm}|p{12cm}|}
+        \hline
+        \rowcolor[HTML]{CFCFCF} 
+        Coluna      & Descrição  \\ \hline
+        keyword\_id & Nome da fonte. \\ \hline
+    \end{tabular}
+    \caption{Descrição dos campos da tabela \textit{sources}.}
+    \label{fig: DescricaoTabelaFontes}
+\end{table}
+
+Várias publicações podem ser extraídas de uma única fonte.
+
+\subsection{Publicações (Posts)}
+\label{subsec: Posts}
+Na tabela \textit{posts} são guardadas as publicações das redes sociais.
+\begin{table}[ht]
+    \begin{tabular}{|p{3cm}|p{12cm}|}
+        \hline
+        \rowcolor[HTML]{CFCFCF} 
+        Coluna      & Descrição  \\ \hline
+        text        & Texto da publicação. \\ \hline 
+        frequency   & Frequência \footnote{Quantidade de vezes que essa publicação foi reafirmada por outros usuários da rede social. A ação associada à frequência muda para cada rede social e sua representação deve ser especificada pelo desenvolvedor.} que a publicação possui na rede social. \\ \hline 
+        author      & Autor da publicação. \\ \hline 
+        post\_date  & Data que a publicação foi mandada à rede social. \\ \hline 
+        source\_id  & Identificador da fonte cuja a publicação pertence. \\ \hline 
+        origin\_id  & Identificador da publicação no banco de dados da rede social . \\ \hline 
+    \end{tabular}
+    \caption{Descrição dos campos da tabela \textit{posts}.}
+    \label{fig: DescricaoTabelaPublicacao}
+\end{table}
+
+Uma publicação é extraída somente de uma fonte e pode ser encontrada por várias pesquisas distintas.
+
+
+
+\section{Interface}
+\label{sec: Interface}
+
+Pensamos em deixar a interface com o usuário a mais simples e intuitiva possível.  Para realizar uma extração basta preencher os campos e opções da página inicial representada na figura \ref{fig: homepage}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=1.0\textwidth]{images/home.png}
+\caption{Página inicial do sistema.}
+\label{fig: homepage}
+\end{figure}
+
+\newpage
+A figura \ref{fig: homepage} consiste em:
 \begin{enumerate}
-    \item Preencher o campo Keyword\footnote{Palavra chave pela qual será pesquisada. Cada resultado possui ao menos uma vez essa palavra no texto} com a palavra desejada;
-    \item Escolher as fontes de extração da informação;
-    \item Opcionalmente, adicionar de uma até 3 Tags\footnote{Palavra que simboliza um termo "semelhante parecido sei la, ou relacionado" aos resultados esperados pela busca da Keyword}. Caso o ao menos 1 dos campos Tag seja preenchido, cada resultado irá conter no corpo do texto ao menos 1 "instancia" de "alguma, no minimo dnv" 1 das Tags especificadas;
+    \item Escrever no campo Keyword a palavra pela qual se deseja pesquisar;
+    \item Escolher as fontes de extração de informação;
+    \item Opcionalmente, adicionar de uma até três Tags. Caso ao menos 1 dos campos Tag seja preenchido, os resultados irão conter no corpo do texto ao menos uma vez os termos especificados pelas Tags;
     \item Clicar no botão Search.
 \end{enumerate}
 
-!talvez outra sebseção?
-Após preencher o formulário e clicar em Search, o TAZ processa os dados enviados, realiza a pesquisa por 
-Keyword AND (Tag1 OR Tag2 OR Tag3)
-Caso encontre resultados, realiza a análise de sentimentos nos textos obtidos usando o dicionário/base de dados "nao sei o q eh extamente agr" SentiWordNet.
+\section{Método de busca}
+\label{sec: MetodoDeBusca}
+Após preencher o formulário e clicar em Search, o TAZ armazena os valores dos campos do formulário em variáveis locais e monta a string de pesquisa para a API da rede social corrente.
 
-!talez outra subsec "Apresentando resultados de análise de sentimento"
-Com os resultados da análise de cada publicação, calculamos os seguintes dados estatísticos sobre esta amostra:
+\subsection{Valores dos Campos do Formulário}
+\label{subsec: valoresDosCamposDoFormulario}
+O critério de pesquisa é definido em duas partes: a keyword (palavra-chave) e as tags ("tradução de tag aqui"). A keyword é o elemento principal para a busca e em combinação com as tags uma a uma, permite uma busca mais específica.
+
+Podemos representar este critério de busca com a seguinte expressão:
+$$keyword \wedge (tag1 \vee tag2 \vee tag3)$$
+
+Um exemplo de uso que se adapta ao critério, é a pesquisa da keyword 'Linux', e de duas tags: 'free' e 'code', que será pesquisado pela aplicação textos que tenham as palavras 'linux' e 'free', ou 'linux' e 'code', ou 'linux, 'code' e 'free'.
+
+\subsection{Pesquisa na API}
+\label{subsec: PesquisaNaAPI}
+No campo source da interface o usuário pode selecionar até três fontes para a busca, que são: Reddit, Youtube e Twitter. Esse campo delimita a origem dos dados a serem retornados na busca, ou seja, dependendo das fontes selecionadas, os métodos das respectivas APIs serão acionados.
+
+\section{Tratamento de resultados}
+\label{sec: TratamentoDeResultados}
+Caso encontre resultados em pelo menos uma das redes sociais, realiza a análise de sentimentos nos textos obtidos usando o analisador de opiniões textuais SentiWordNet.
+
+O analisador avalia o texto através de uma estimativa de cada palavra. Acessamos o SentiWordNet através de um arquivo de texto que contém uma pontuação de 0.0 à 1.0 para cada palavra quanto a sua positividade e negatividade.
+Assim, somando os valores obtidos de cada palavra contida no texto, podemos ter uma ideia da opinião expressa pelo seu autor.
+
+Como nossa aplicação usa vários textos de múltiplas fontes, nós aplicamos uma média ponderada sobre todos os textos, considerando a pontuação do texto obtida do SentiWordNet, e a frequência do texto como peso.
+
+\section{Exibindo estatísticas sobre a análise}
+\label{sec: ExibindoEstatisticas}
+
+Com os resultados da análise de sentimento para cada texto de cada publicação, calculamos os seguintes dados estatísticos sobre esta amostra:
 \begin{itemize}
+    \item Total de textos analisados
     \item Média aritmética simples
-    \item Média ponderada "BOA TARDe, podemos fazer media ponderada pelo campo de frequencia e explicar o calculo que fizemos numa subsec"
-    \item Textos com a \textit{maior} nota positiva
-    \item Textos com a \textit{menor} nota positiva
-    \item Textos com a nota igual à "mediana"
-    \item Textos com a nota igual à "moda"
-    \item Desvio padrão dos textos
-    https://github.com/jtescher/descriptive-statistics
+    \item Média ponderada considerando a frequência
+    \item \textit{maior} nota positiva
+    \item \textit{menor} nota positiva
+    \item Mediana das notas
+    \item Desvio padrão das notas
+    \item \% de notas muito positivas (acima de 0.75)
+    \item \% de notas positivas (entre 0.25 e 0.75)
+    \item \% de notas pouco positivas (entre 0 e 0.25)
+    \item \% de notas pouco negativas (entre -0.25 e 0.0)
+    \item \% de notas pouco negativas (entre -0.75 e -0.25)
+    \item \% de notas pouco negativas (menor que -0.75)
 \end{itemize}
 
-!talvez um capitulo de experimentos
-Sobre uma keyword e tags "narrando" os resultados e seus significados
-
-!!sub sec de entrada do experimento
-
-!!sub sec da análise nossa sobre os resultados obervados
-
-!Trabalhos futuros?
-O TAS foi desenvolvido sobre um modelo de banco de dados bastante estrito e com a intenção de adaptação fácil a outras tecnologias de "SENTIWORD".
-para que possam ser implementados algoritmos de pesquisa em outras fontes basta adicionar o método de pesquisa específico daquela fonte ao controlador de pesquisas (query>contraolle)
-
-!!Para adicionar uma nova fonte
-Incluir no banco na tabela Sources do banco de dados o nome da nova fonte.
-Adicionar ao controlador "de querys" o algoritmo que realiza a busca na fonte.
-(acho que seria legal colocar a assinatura de uma função modelo, tipo Search_<fonte>(query, limit) retornando lista de Posts
-
-!!Para alterar a base de dados de análise de sentimento
-Não lembro agr ahhehae mas não é tão difícil acho q eh soh mudar o analyzer
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\section{Aplicação \textit{Math Race} com MEAN \textit{Stack}}
-\label{Aplicação Math Race com MEAN Stack}
-Nesta seção será apresentada uma aplicação desenvolvida com o MEAN \textit{Stack}. A subseção \ref{subsec: Proposta de desenvolvimento} descreve a proposta de desenvolvimento da aplicação. A subseção \ref{subsec: Utilização e funcionamento da aplicação} mostra como é a utilização e o funcionamento da aplicação. A subseção \ref{subsec: Desenvolvimento da aplicação} aborda como foi desenvolvida a aplicação. 
-
-\subsection{Proposta da aplicação}
-\label{subsec: Proposta de desenvolvimento}
- Uma aplicação simples foi desenvolvida, com o intuito de demonstrar diversos aspectos do MEAN \textit{Stack}, como a organização e a integração das ferramentas que compõem o MEAN \textit{Stack}. A aplicação foi baseada na implententação do \textit{Math Race}, desenvolvida por Iván Loire\cite{MathRace}, possuindo apenas o Node.js e o Socket.io como ferramentas em comum.
-
-\subsection{Utilização e funcionamento da aplicação}
-\label{subsec: Utilização e funcionamento da aplicação}
- A aplicação é um jogo, cujo objetivo é realizar uma competição em tempo real, para ver qual jogador acerta mais operações de matemáticas aleatórias de adição e subtração, em determinado tempo.
-
-Na figura \ref{fig:Imagem da interface da aplicação} é mostrada a interface da aplicação, que contém a operação aleatória, o campo para entrada de dados, o marcador de tempo (\textit{Time}), o campo de pontuação (\textit{score}) e o Hall da fama (\textit{Hall of fame}).
-
-    \begin{figure}[htb]
-    \centering
-    \includegraphics[scale=0.3]{images/index_mean_math_race.png}
-    \caption{Imagem da interface da aplicação}
-    \label{fig:Imagem da interface da aplicação}
-    \end{figure}
-    
-Todos os jogadores possuem o mesmo tempo para responder a mesma operação matemática. A operação matemática muda para todos os jogadores após a resposta correta da operação anterior ter sido preenchida por qualquer jogador.
-
-O jogo funciona através de rodadas, e para cada rodada o usuário tem um tempo limite pré-determinado para acertar o resultado da conta. A cada resultado correto o valor da pontuação do usuário, que começa em zero, é incrementado com mais um ponto. Ao final de uma rodada os usuários que efetuaram alguma pontuação são adicionados no ``Hall da fama'', que é ordenado pelos dez usuários com mais pontos obtidos em uma única rodada, e as pontuações dos usuários são zeradas, para que uma nova rodada se inicie. 
-
-Na figura \ref{fig: Diagrama do funcionamento da aplicação} é demonstrado, através de um diagrama, o funcionameto da aplicação. 
-
-    \begin{figure}[htb]
-    \centering
-    \includegraphics[scale=0.30]{images/func_mr.png}
-    \caption{Diagrama do funcionamento da aplicação}
-    \label{fig: Diagrama do funcionamento da aplicação}
-    \end{figure}
-
-\subsection{Desenvolvimento da aplicação}
-\label{subsec: Desenvolvimento da aplicação}
-Nesta subseção será abordado como é o desenvolvimento de uma aplicação baseado no MEAN \textit{Stack}. Partindo de como foi realizada a escolha da estrutura da aplicação, e finalizando com a integração das ferramentas do MEAN \textit{Stack}.
-\begin{description}
-\item[Estrutura da aplicação] \hfill \\
-No início do desenvolvimento da aplicação, verificou-se as possibilidades em relação à estrutura e organização de arquivos que seria utilizada, pois não exite uma abordagem padrão em relação a este assunto.
-
-Nas pesquisas iniciais as primeiras possibilidades que apareceram foram através do MEAN.js e o MEAN.io que são geradores automáticos de estruturas de arquivos para o MEAN \textit{Stack}. Apesar de fornecerem uma estrutura pronta, ao lidar com geradores, é necessário que se programe de uma maneira pré-determinada de acordo com o gerador escolhido, o que torna a aplicação um pouco mais complexa de ser apresentada, e detalhada, e foge do escopo desta monografia.
-
-A opção escolhida para a criação da estrutura de diretórios, foi através de um submódulo do Express.js chamado \textit{express-generator}. A figura \ref{fig: estrutura criada pelo express-generator} mostra como as pastas e os arquivos são organizados neste gerador, ao total são 7 pastas e 9 arquivos. 
-
-    \begin{figure}[htb]
-    \centering
-    \includegraphics[scale=0.7]{images/estrutura_exp_gen.png}
-    \caption{Estrutura criada pelo express-generator \cite{ExpressGen}}
-    \label{fig: estrutura criada pelo express-generator}
-    \end{figure}
-
-A pasta \textit{public} contém todos os arquivos de imagem, Javascript e CSS que serão enviados para o cliente, como por exemplo os arquivos Javascript do Angular.js, e o arquivo CSS chamado style.css.
-
-Na pasta \textit{views} são definidas as páginas da aplicação, contendo a página do \textit{layout}, do \textit{index}, e uma página de erros. Quando o usuário acessa a aplicação, primeiramente é carregada a página de \textit{layout}, que então carrega a página \textit{index}, e caso algum erro ocorra é enviada uma mensagem de erro.
-
-Para as rotas que definem como serão tratadas as requisições que podem ser realizadas pela aplicação, o \textit{express-generator} cria uma pasta chamada \textit{routes}. Ao receber requisições, o servidor através de funções definidas na pasta \textit{routes}, pode desde renderizar as páginas solicitadas, até encaminhar as requisições para outras rotas, afim de, por exemplo, realizar uma consulta em um banco de dados.
-
-A parte do servidor que o Node.js é responsável, fica no arquivo www da pasta \textit{bin}, e no arquivo app.js na raiz da aplicação.  
-
-Além da estrutura criada pelo \textit{express-generator}, foram criadas mais duas pastas, que são a \textit{models} e a \textit{lib}. Na \textit{models}, ficam os arquivos responsáveis pela conexão e pelos acessos ao MongoDB. A \textit{lib} contém as principais funções da aplicação responsáveis pelo funcionamento do jogo \textit{Math Race}, e da comunicação cliente/servidor, que é feita através do Socket.io, sendo que a sua explicação foi colocada na seção \ref{sec: Socket.io} do apêndice A.
-
-\item[Integração das ferramentas do MEAN \textit{Stack}] \hfill \\
-Quando o usuário acessa a aplicação, ocorre uma série de mensagens, entre o lado do cliente e do servidor, afim de informar o servidor que há um novo usuário conectado, e fazer com que o cliente obtenha os dados da partida. 
-
-O diagrama da figura \ref{fig: Diagrama de sequência do acesso da aplicação}, demonstra a sequência de mensagens que ocorrem quando um usuário acessa a aplicação (mensagem 1). 
-
-No lado do servidor, o Node.js envia os arquivos da pasta \textit{public} e o \textit{index} da aplicação (mensagem 2). No lado do cliente, o Angular.js envia uma solicitação de conexão através da função \textit{connect} do Socket.io (mensagem 3), e o Node.js responde com uma mensagem avisando que o usuário está conectado (mensagem 4). Ao receber essa mensagem o Angular.js envia outra mensagem chamada ``\textit{join}'' (mensagem 5), e o Node.js envia os dados referente a operação, a pontuação e o \textit{hall} da fama (mensagem 6, 7 e 8). Por último o Angular.js faz um requisição ao MongoDB para obter o hall da fama atualizado (mensagem 9). 
-
-    \begin{figure}[htb]
-    \centering
-    \includegraphics[scale=0.7]{images/diagrama_de_seq_acesso.png}
-    \caption{Diagrama de sequência do acesso da aplicação}
-    \label{fig: Diagrama de sequência do acesso da aplicação}
-    \end{figure}
-% codigo do join
-
-A cada final de rodada, o Node.js envia uma nova operação, e o Angular.js envia uma mensagem ao Node.js solicitando o \textit{hall} da fama atualizado. Essa mensagem é enviada através de um módulo do Angular.js chamado \textit{ng-resource}, sendo que através deste módulo é possível interagir com o Node.js utilizando o RESTFul\footnote{ ``RESTful é um serviço web que utiliza o paradigma de arquitetura do REST, ou seja, é o termo normalmente usado para se referir a implementação de Web Services que utilizam tal arquitetura.''\cite{RESTWiki}}. 
-
-Caso o usuário tenha efetuado alguma pontuação na rodada, o Angular.js envia uma mensagem ao Node.js, contendo um objeto JSON com o nome e a pontuação efetuada. O Node.js então faz a inserção no MongoDB, se for um novo usuário, ou atualiza a pontuação, se o nome do usuário já estiver cadastrado no MongoDB, e a nova pontuação for maior do que a antiga.
-
-% diagrama demonstrando a aplicação em execução
-\end{description}
-
-% \begin{lstlisting}
-% 	$scope.sendResult = function(item) {
-% 		if (item.value) {
-% 		    ...
-% 			socket.emit('send-server-result', item);
-% 		};
-% 	}
-% \end{lstlisting}
-
-\section{Testes de desempenho}
-\label{subsec: Testes de desempenho}
-Nesta seção serão apresentados os testes que foram realizados através de duas aplicações, o \textit{Math Race} e o ``Encurtador de URL''. 
-
-No \textit{Math Race}, foi efetuado um teste simples através do envio de um conjunto de requisições para consultas ao banco de dados, obtendo-se o tempo de duração para o servidor responder cada conjunto de requisições, além da média de requisições por segundo.
-
-A aplicação ``Encurtador de URL'' foi implementada em diversos ambientes, definidos na tabela \ref{fig: Ambientes dos testes}, afim de avaliar o consumo da memória, a utilização da CPU, e a quantidade de requisições realizadas por tempo. 
-
-\subsection{Testes na Aplicação \textit{Math Race}}
-% Nesta subseção o objetivo é demonstrar o comportamento da aplicação através de um conjunto de testes de envio de requisições e consultas ao banco de dados. 
-Os testes foram realizados aumentando gradativamente a quantidade de requisições e requisições concorrentes, afim de verificar a latência de resposta do servidor. A cada requisição é realizada uma consulta no banco de dados para obtenção da lista dos dez primeiros usuários e suas pontuações no \textit{hall} da fama.
-
-Na figura \ref{fig: Lista de objetos retornada pelo MongoDB}, podemos observar parte da lista de objetos retornada pela consulta ao banco de dados, que cada cliente realiza ao acessar a aplicação durante os testes.
-
-    \begin{figure}[htb]
-    \centering
-    \includegraphics[scale=0.7]{images/objs_hof_bd.png}
-    \caption{Lista de objetos retornada pelo MongoDB}
-    \label{fig: Lista de objetos retornada pelo MongoDB}
-    \end{figure}
-% \begin{lstlisting}
-% \end{lstlisting}
-
-A máquina utilizada nos testes tem como configurações um Core i7 de 3.6GHZ, e 8GB de memória RAM, utilizando o Fedora 20 de 64 \textit{bits} como sistema operacional.
-
-
-Na tabela \ref{fig: Carga na quantidade requisições} são mostrados os resultados dos testes realizados na aplicação, através de uma ferramenta específica para teste de carga (\textit{Load test}) conhecida como \textit{weighttp}\footnote{http://redmine.lighttpd.net/projects/weighttp/wiki}. No \textit{weighttp} é possível definir parâmetros como a quantidade de requisições que serão enviadas ao servidor e o número de requisições concorrentes que ocorrerão durante o teste.
-
-Para estes testes foram imaginados dois cenários diferentes, sendo determinada uma quantidade de requisições concorrentes fixa (100 e 1000) em cada cenário. Para cada cenário variou-se a quantidade de requisições de 1.000 até 100.000, obtendo-se o tempo demorado pelo servidor para atender todas estas requisições e a taxa de requisições por segundo. 
-
-
-\begin{table}[ht]
-\centering
-\begin{tabular}{|c|c|c|c|}
-\hline
-\rowcolor[HTML]{CFCFCF} 
-\# requisições concorrentes & \# requisições & tempo(seg) & req/seg      \\ \hline
-\rowcolor[HTML]{EFEFEF} 
-\cellcolor[HTML]{EFEFEF} & 1000 & 0,69 & 1458  \\ \cline{2-4}
-\rowcolor[HTML]{EFEFEF} 
-\cellcolor[HTML]{EFEFEF} & 2000 & 1,357 & 1472  \\ \cline{2-4}
-\rowcolor[HTML]{EFEFEF} 
-\cellcolor[HTML]{EFEFEF} & 5000           & 3,437      & 1454  \\ \cline{2-4} 
-\rowcolor[HTML]{EFEFEF} 
-\cellcolor[HTML]{EFEFEF} & 10000          & 7,690      & 1414  \\ \cline{2-4} 
-\rowcolor[HTML]{EFEFEF} 
-\cellcolor[HTML]{EFEFEF} & 30000          & 20,928     & 1433  \\ \cline{2-4} 
-\rowcolor[HTML]{EFEFEF} 
-\cellcolor[HTML]{EFEFEF} & 50000          & 34,986     & 1429  \\ \cline{2-4} 
-\rowcolor[HTML]{EFEFEF} 
-\cellcolor[HTML]{EFEFEF} & 70000          & 47,102     & 1486  \\ \cline{2-4} 
-\rowcolor[HTML]{EFEFEF}
-\multirow{-8}{*}{\cellcolor[HTML]{EFEFEF}100} & 100000 & 67,967     & 1471  \\ \hline
-    & 1000           & 3,250      & 330   \\ \cline{2-4} 
-    & 2000           & 3,350      & 658   \\ \cline{2-4} 
-    & 5000           & 3,691      & 1354  \\ \cline{2-4} 
-    & 10000          & 7,503      & 1332  \\ \cline{2-4} 
-    & 30000          & 21,963     & 1365  \\ \cline{2-4} 
-    & 50000          & 37,327     & 1339  \\ \cline{2-4} 
-    & 70000          & 52,157     & 1342  \\ \cline{2-4} 
-\multirow{-8}{*}{1000}   & 100000         & 74,914     & 1334  \\ \hline    
-\end{tabular}
-\caption{Carga na quantidade requisições}
-\label{fig: Carga na quantidade requisições}
-\end{table}
-
-Pode-se notar através da tabela \ref{fig: Carga na quantidade requisições}, que à medida que carga de requisições aumenta, o tempo  total para o servidor responder estas requisições cresce consideravelmente, independentemente do número de requisições concorrentes, mas mantém, em média, a mesma taxa de requisições por segundo. No gráfico da figura \ref{fig: Gráfico de requisições por tempo}, pode-se visualizar de maneira mais clara o comportamento da aplicação, durante a carga de requisições.  
-% \newpage
-    \begin{figure}[htb]
-    \centering
-    \includegraphics[scale=0.7]{images/reqxtempo.png}
-    \caption{Gráfico de requisições por tempo}
-    \label{fig: Gráfico de requisições por tempo}
-    \end{figure}
-
-\newpage
-
-\subsection{Análise de testes de desempenho do Node.js e do MongoDB com outros ambientes}
-Os principais componentes responsáveis pela a escalabilidade no MEAN \textit{Stack} são o MongoDB, através do \textit{autosharding}, e do mapeamento dos dados em memória, e o NodeJS, através do \textit{Event Loop}, e da \textit{Thread Pool}, como mencionado no capítulo \ref{tecnologias}.
-    
-Existem diversas referências que comparam o desempenho destes dois componentes juntos com outros ambientes, variando desde a linguagem de programação até a base de dados utilizada.
-
-A referência que esta monografia irá utilizar como base é a do artigo de Ricardo Schroeder e Fernando dos Santos,  intitulado ``Arquitetura e testes de serviços web de alto desempenho com Node.js e Mongodb'' \cite{NodejsEMongodb} que implementou um ``Encurtador de URL'' como aplicação.
-
-A aplicação do ``Encurtador de URL'' serve para mapear uma \textit{hash}, de 6 caracteres, para uma URL. Cada \textit{hash} é gerada de maneira única, e aleatória, e foram alocados um milhão de URL's para os testes.
-
-A cada acesso é feita a verificação se a \textit{hash} utilizada é válida.  Primeiro é verificado se a \textit{hash} tem 6 caracteres e depois se ela existe no banco de dados, caso alguma destas verificações falhe é retornado somente um código de  resposta de erro 404. 
-
-Para os testes, a aplicação definida foi implementada em 6 ambientes, que foram descritos na tabela \ref{fig: Ambientes dos testes}. Cada aplicação de um ambiente efetua a mesma requisição e será testada utilizando uma base de amostras contendo duas mil \textit{hashs}. A duração foi estipulada em 60 segundos, sendo que nos  5 segundos iniciais, foram criados quarenta usuários que irão se conectar de maneira incremental, permanecendo ativos durantes os próximos quarenta e cinco segundos e reduzindo durante os dez segundos finais. 
-
-\begin{table}[htb]
-\centering
-\begin{tabular}{|c|c|c|}
-\cline{1-3}
-\rowcolor[HTML]{CFCFCF}
-Servidor & Linguagem de Programação & Banco de Dados \\ \cline{1-3}
-Node.JS  & Javascript               & MongoDB        \\ \cline{1-3}
-Node.Js  & Javascript               & PostgresSQL    \\ \cline{1-3}
-Netty    & Java                     & MongoDB        \\ \cline{1-3}
-Netty    & Java                     & PostgresSQL    \\ \cline{1-3}
-Apache   & PHP                      & MongoDB        \\ \cline{1-3}
-Apache   & PHP                      & PostgresSQL    \\ \cline{1-3}
-\end{tabular}
-\caption{Ambientes dos testes \cite{NodejsEMongodb}}
-\label{fig: Ambientes dos testes}
-\end{table}
-
-Os testes realizados na aplicação foram executados em um ambiente virtualizado contendo as seguintes características: Sistema Operacional CentOS 6.2 x86, 1Gb de memória RAM, 2 núcleos de 2,4Ghz Intel Core I5. A aplicação utilizada para os testes foi o JMeter, que é um software que serve para realizar testes de desempenho, carga e stress, desenvolvido pela Apache\footnote{http://jmeter.apache.org/} . Os resultados são mostrados nas tabelas \ref{fig:graf_memoria}, \ref{fig:graf_cpu} e \ref{fig:graf_tempo}.
-\clearpage
-\begin{description}
-\item[Consumo de Memória RAM] \hfill \\
-A memória RAM é um dos princípais pontos de análise em um servidor web, pois está ligada diretamente ao número de requisições que o servidor é capaz de atender em determinado tempo.\cite{NodejsEMongodb}
-O resultado do teste demonstrou o uso de memória constante e estabilidade por parte de cada plataforma. Os piores resultados ficaram com os ambientes que utilizam o servidor Apache e a linguagem PHP, enquanto o ambiente que usa Node.js e o MongoDB foi o segundo melhor no índice de consumo de memória.
-
-\begin{figure}[htb!]
-\centering
-\includegraphics[scale=0.5]{images/graf_memoria.png}
-\caption{Consumo de memória RAM durante a execução dos testes \cite{NodejsEMongodb}}
-\label{fig:graf_memoria}
-\end{figure}
-
-\clearpage
- 
-\item[Utilização de CPU] \hfill \\
-Analisar a utilização de CPU é um fator relevante para que se tenha uma noção da carga gerada pelas requisições efetuadas pelos clientes. Quanto mais próximo de 100\% estiver o uso da CPU, maiores serão as chances do servidor não conseguir atender as requisições recebidas. 
-
-No gráfico da figura \ref{fig:graf_cpu} nota-se um melhor desempenho do Node.js junto ao MongoDB em relação aos outros ambientes, ficando com 40\% de uma média de uso, enquanto em outros ambientes como o que utilizou Java/Netty/PostgreSQL este consumo passou para aproximadamente 90\%.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[scale=0.5]{images/graf_cpu.png}
-\caption{Consumo de CPU (\%) durante a execução do teste. \cite{NodejsEMongodb}}
-\label{fig:graf_cpu}
-\end{figure}
-
-% \newpag
-\clearpage
-\item[Quantidade de requisições por tempo] \hfill \\
-O teste de requisições por tempo basicamente indica o quanto de usuários (requisições) o servidor é capaz de absorver.\cite{NodejsEMongodb}
-
-Na figura \ref{fig:graf_tempo} é possível observar que os dois ambientes que mais responderam requisições, que no caso foram o Node.JS/MongoDB e o Netty/MongoDB, utilizaram o mesmo banco de dados. Mas o crédito desse resultado positivo, também se deve aos servidores de alto desempenho, que possuem como característica atender o maior numero de requisições simultâneas. Outro ponto que chama atenção, é como os ambientes com MongoDB se destacaram sobre os ambientes com PostgresSQL.
-
-% \clearpage
-\begin{figure}[htb]
-% \centering
-\includegraphics[scale=0.5]{images/graf_req_tempo.png}
-\caption{Requisições por tempo. \cite{NodejsEMongodb}}
-\label{fig:graf_tempo}
-\end{figure}
-
-\end{description}
-
-
-Após ser realizada uma análise dos testes, tanto no \textit{Math Race} quanto no ``Encurtador de URL'', concluímos que realmente a utilização do Node.js junto ao MongoDB, proporciona um ganho de desempenho considerável, em relação as tecnologias comparadas. Este ganho se deve ao fato das particularidades que cada tecnologia adota, para lidar com escalabilidade, no caso o Node.js com o \textit{Event Loop} e o MongoDb com o \textit{Autosharding}.
-%de maneira pura, ou seja, sem que haja alteração para obtenção de resultados  
-
-
-
-% PROPOSTA DE DESENVOLVIMENTO
-
-% DIAGRAMA DE CASOS DE USO
-%  Especificações dos cs
-
-% DESENVOLVIMENTO DA APLICAÇÃO
-
-% UTILIZAÇÃO DA APLICAÇÃO
-
-%  TESTES DE DESEMPENHO
-%   weigthttp
-%   objetivo do teste, como foram realizados, hardware utilizado
-%      analise dos resultados obtidos
-
-%   figura
-
-% analise dos teste
-
+!!colocar prints dos gráficos com resultados de \% de textos por faixa.
+
+% Very positive scores are > 0.75
+% Positive scores are > 0.25 & <= 0.75
+% Weak positive scores are > 0 & <= 0.25
+% Weak negative scores are < 0 & >= -0.25
+% Negative scores are < -0.25 & >= -0.75
+% Very negative scores are < -0.75

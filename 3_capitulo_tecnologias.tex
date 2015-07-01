@@ -18,8 +18,14 @@ Pesquisando mais sobre o assunto, percebemos que o nível de complexidade poderi
     \item O segundo, implementar uma ferramenta que realize a análise de sentimento na língua portuguesa, e aplicá-la nos textos armazenados usando o modelo do primeiro trabalho.
 \end{itemize}
 
-\section{Visão geral da aplicação}
-\label{sec: visaoGeralDaAplicacao}
+Assim, futuros trabalhos nessa área poderão preocupar-se precisamente com a análise em si, sabendo que existem eficientes métodos de pesquisa implementados, e um modelo de banco de dados planejado para este fim, prontos para serem utilizados.
+
+\section{TAZ}
+\label{sec: TAZ}
+Nossa aplicação Web, denominada TAZ, foi desenvolvida para servir como um framework de extração de dados de redes sociais.
+
+\subsection{Visão geral da aplicação}
+\label{subsec: visaoGeralDaAplicacao}
 Escolhemos implementar o modelo de banco de dados nesse trabalho, já que a análise de sentimentos depende de informações previamente armazenadas.
 Portanto, nossa aplicação deve:
 \begin{enumerate}
@@ -36,4 +42,31 @@ Portanto, nossa aplicação deve:
   \label{fig:esquema}
 \end{figure}
 
-Assim, futuros trabalhos nessa área poderão preocupar-se precisamente com a análise em si, sabendo que existem eficientes métodos de pesquisa implementados, e um modelo de banco de dados planejado para este fim, prontos para serem utilizados.
+\subsection{Termos para pesquisa}
+\label{subsec: TermosPesquisa}
+Para que o usuário possa definir os termos para pesquisa, foi implementada uma interface web com campos de formulário simples. Através desses campos, o usuário do framework envia para o servidor uma Keyword\footnote{Palavra-chave pela qual será realizada uma pesquisa. Cada resultado possui ao menos uma vez essa palavra no texto} obrigatória e 3 Tags\footnote{Palavra que simboliza um termo relacionado à Keyword. Pode aparecer, mas não obrigatoriamente, nos resultados da pesquisa realizada.} opcionais.
+
+\subsection{Método de busca à rede social}
+\label{subsec: MetodoRedeSocial}
+Como já mencionado na seção \ref{sec: Redes sociais}, cada rede social tem um objetivo diferente, assim cada API tem métodos de busca distinto que retornam seus objetos correspondentes. Por exemplo, os métodos de busca da API do YouTube são voltados para encontrar vídeos. Já na API do Twitter, os métodos de busca retornam textos. Os métodos de busca da API do Reddit retornam links, que podem apontar para imagens, textos, vídeos, entre outros.
+Assim, é necessário uma interface que trate todas essas diferenças e apresente, em um único formato, um método de busca mais abstrato.
+
+\subsection{Modelagem dos resultados}
+\label{subsec: ModelagemDosResultados}
+Tendo em vista as especificidades de cada rede social e seus métodos, deve-se também adaptar as informações recebidas ao modelo de banco de dados criado para o TAZ.
+
+Este modelo do banco de dados foi idealizado para armazenar características de textos com caráter opinativos, oriundo de quaisquer redes sociais.
+Sendo assim, deve ser genérico o suficiente para guardar dados comuns destes textos.
+
+Estudando trabalhos e outras ferramentas de análise de sentimento, consideramos como mais relevantes as seguintes informações:
+
+\begin{itemize}
+    \item Texto
+    \item Frequência
+    \item Fonte
+    \item Data postagem
+    \item Autor
+    \item Palavras pesquisadas
+\end{itemize}
+
+Nosso modelo de banco de dados foi projetado para armazenar as informações acima, ficando a cargo do desenvolvedor identificar quais informações da rede social correspondem a cada um dos campos acima.
